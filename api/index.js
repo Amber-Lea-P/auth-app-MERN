@@ -22,3 +22,14 @@ app.listen(3000, () => {
 //api routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+
+//middleware routes - 500 is the internal server error code
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  return res.status(statusCode).json({
+    success: false,
+    error: message,
+    statusCode,
+  });
+});
