@@ -1,11 +1,13 @@
 import express from 'express';
-import { mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from './routes/user.route.js'
-import authRoutes from './routes/auth.route.js'
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => {
     console.log('Connected to MongoDB');
   })
   .catch((err) => {
@@ -13,23 +15,22 @@ mongoose.connect(process.env.MONGO).then(() => {
   });
 
 const app = express();
+
 app.use(express.json());
 
 app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+  console.log('Server listening on port 3000');
 });
 
-//api routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 
-//middleware routes - 500 is the internal server error code
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   return res.status(statusCode).json({
     success: false,
-    error: message,
+    message,
     statusCode,
   });
 });
